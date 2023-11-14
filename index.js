@@ -1,41 +1,33 @@
 const config = require('./config');
 const helpers = require('./helpers');
 
-const fs = require('fs');
+helpers.log(helpers.logLevel.INFO, `TextStash starting up...`);
 
 const data_dir = config.data_dir;
 global.data_dir = data_dir;
 
 /**
- * Check if data directory exists, create it otherwise.
- * Exit app if directory can't be created.
+ * Initialize data directory
  */
-try {
-    if (!fs.existsSync(data_dir)) {
-        helpers.log(1, helpers.logType.INFO, "Data directory doesn't exist, creating it...")
-        fs.mkdirSync(data_dir);
-    } else {
-        if (!fs.statSync(data_dir).isDirectory()) {
-            helpers.log(1, helpers.logType.WARNING, "Data directory is not a directory, recreating...")
-            fs.unlink(data_dir, () => {
-                fs.mkdirSync(data_dir);
-            });
-        }
-    }
-} catch (err) {
-    console.error(err);
-    process.exit(1);
-}
+helpers.log(helpers.logLevel.INFO, `Initializing data directory...`);
+helpers.initializeDataDir(helpers.logLevel.INFO);
 
 /**
  * Initialize app
  */
+helpers.log(helpers.logLevel.INFO, `Initializing Web server (Express)`);
 const express = require('express');
 const app = express();
 
 app.use(require('body-parser').urlencoded({ extended: false }));
 app.set('view engine', 'ejs');
 app.use(express.static('static'));
+
+app.use(function(req, res, next) {
+    helpers.log(helpers.logLevel.DEBUG, `[HTTP] Request form ${req.ip} at ${req.path}`);
+
+    next();
+});
 
 app.use("/", require("./routes/main"));
 app.use("/api", require("./routes/api"));
@@ -51,5 +43,5 @@ app.all('*', (req, res) => {
 });
 
 app.listen(config.http_port, () => {
-  console.log(`Example app listening on port ${config.http_port}`);
+    helpers.log(helpers.logLevel.INFO, `TextStash Web server listening on port ${config.http_port}`);
 });

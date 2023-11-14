@@ -11,6 +11,7 @@ h1 {
 .pastebox {
     margin: auto;
     width: 75%;
+    min-height: 25vw;
 }
 
 .pastebox-ta {

@@ -38,7 +38,7 @@ router.get('/:id', (req, res) => {
     const paste = app.getPaste(req.params.id);
     if (paste == false) {
         res.status(404);
-        res.send("404 Not Found");
+        res.render('error', {error: "Error 404<br>Paste not found."});
         return;
     }
 

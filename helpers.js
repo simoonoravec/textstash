@@ -1,6 +1,8 @@
 const config = require("./config");
+const fs = require('fs');
 
-const logType = {
+const logLevel = {
+    DEBUG: "DEBUG",
     INFO: "INFO",
     NOTICE: "NOTICE",
     WARNING: "WARNING",
@@ -10,16 +12,16 @@ const logType = {
 /**
  * 
  * @param {int} level Log level (1 = Production, 2 = Debug)
- * @param {int} type Log type (defined in helpers.js)
+ * @param {int} type Log type (defined in js)
  * @param {*} message Log message
  * @returns 
  */
-function log(level, type, message) {
-    if (level > config.log_level) {
+function log(type, message) {
+    if (type == logLevel.DEBUG && config.log_level != 2) {
         return;
     }
 
-    if (!type in logType) {
+    if (!type in logLevel) {
         return;
     }
 
@@ -28,4 +30,32 @@ function log(level, type, message) {
     console.log(`[${time}][${type}]: ${message}`);
 }
 
-module.exports = { logType, log };
+/**
+ * Check if data directory exists, create it otherwise.
+ * Exit app if directory can't be created.
+ * @param {int} logLevel 
+ * @returns void | false
+ */
+function initializeDataDir(logLevel) {
+    try {
+        if (!fs.existsSync(data_dir)) {
+            log(logLevel, "Data directory doesn't exist, creating it.")
+            fs.mkdirSync(data_dir);
+        } else {
+            if (!fs.statSync(data_dir).isDirectory()) {
+                log(logLevel, "Data directory is not a directory, recreating.")
+                fs.unlink(data_dir, () => {
+                    fs.mkdirSync(data_dir);
+                });
+            } else {
+                log(logLevel, `Data directory found.`);
+            }
+        }
+        return true;
+    } catch (err) {
+        console.error(err);
+        process.exit(1);
+    }
+}
+
+module.exports = { logLevel, log, initializeDataDir };

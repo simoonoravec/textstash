@@ -1,4 +1,5 @@
 const config = require('./config');
+const helpers = require('./helpers');
 const crypto = require('crypto');
 const fs = require('fs');
 
@@ -13,14 +14,19 @@ function createPaste(text) {
             reject();
         }
 
+        if (helpers.initializeDataDir(helpers.logLevel.DEBUG) == false) {
+            reject();
+        }
+
         let id;
         do {
             id = crypto.randomBytes(4).toString('hex');
         } while (fs.existsSync(config.data_dir + `/${id}`));
 
-        
+        helpers.log(helpers.logLevel.DEBUG, `Writing file ${id}`);
         try {
             fs.writeFile(config.data_dir + `/${id}`, text, 'utf8', function() {
+                helpers.log(helpers.logLevel.DEBUG, `Written file ${id}`);
                 resolve(id);
             });
         } catch(err) {
@@ -40,10 +46,17 @@ function getPaste(id) {
         return false;
     }
 
-    if (!fs.existsSync(config.data_dir + `/${id}`)) {
+    if (helpers.initializeDataDir(helpers.logLevel.DEBUG) == false) {
         return false;
     }
 
+    helpers.log(helpers.logLevel.DEBUG, `Reading file ${id}`);
+    if (!fs.existsSync(config.data_dir + `/${id}`)) {
+        helpers.log(helpers.logLevel.DEBUG, `Failed reading file ${id} - Not found`);
+        return false;
+    }
+
+    helpers.log(helpers.logLevel.DEBUG, `Read file ${id} OK`);
     return fs.readFileSync(config.data_dir + `/${id}`, 'utf8');
 }
 

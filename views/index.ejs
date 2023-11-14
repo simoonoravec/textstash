@@ -1,10 +1,10 @@
 <%- include('partials/header') %>
 <h1>TextStash</h1>
-<div class="pastebox">
+<div class="container">
     <form id="paste-form" method="POST" action="/paste">
         <input type="submit" class="btn btn-blue" value="Stash">
         <button class="btn hidden" id="clipboard-paste">Paste from clipboard</button>
-        <textarea class="pastebox-ta" name="text" id="text" autofocus></textarea>
+        <textarea class="textarea-paste" name="text" id="text" autofocus></textarea>
     </form>
 </div>
 <script>

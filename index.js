@@ -19,7 +19,7 @@ helpers.log(helpers.logLevel.INFO, `Initializing Web server (Express)`);
 const express = require('express');
 const app = express();
 
-app.use(require('body-parser').urlencoded({ extended: false, limit: '5mb' }));
+app.use(require('body-parser').urlencoded({ extended: false, limit: '1mb' }));
 app.set('view engine', 'ejs');
 app.use(express.static('static'));
 

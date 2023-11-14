@@ -1,0 +1,10 @@
+<%- include('partials/header') %>
+<h1>TextStash</h1>
+<div class="pastebox">
+    <a href="/"><button class="btn btn-blue">New stash</button></a>
+    <a href="/raw/<%= id %>"><button class="btn">View raw</button></a>
+    <div class="readbox">
+        <pre><code><%- text %></code></pre>
+    </div>
+</div>
+<%- include('partials/footer') %>

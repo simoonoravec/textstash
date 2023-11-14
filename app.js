@@ -2,6 +2,11 @@ const config = require('./config');
 const crypto = require('crypto');
 const fs = require('fs');
 
+/**
+ * Create new paste
+ * @param {string} text Paste text
+ * @returns Promise
+ */
 function createPaste(text) {
     return new Promise((resolve, reject) => {
         if (text.length == 0) {
@@ -25,6 +30,11 @@ function createPaste(text) {
     });
 }
 
+/**
+ * Read existing paste
+ * @param {string} id Paste ID
+ * @returns string | false
+ */
 function getPaste(id) {
     if (!(/^[a-zA-Z0-9]+$/).test(id)) {
         return false;

@@ -3,6 +3,9 @@ const app = require("../app");
 const express = require('express'),
     router = express.Router();
 
+/**
+ * Create new paste
+ */
 router.post('/paste', (req, res) => {
     const text = req.body.text || null;
     if (text == null || text.length == 0) {

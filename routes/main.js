@@ -3,10 +3,18 @@ const app = require("../app");
 const express = require('express'),
     router = express.Router();
 
+const hljs = require('highlight.js');
+
+/**
+ * Home page
+ */
 router.get('/', (req, res) => {
     res.render('index');
 });
 
+/**
+ * Pasting from home page without JavaScript enabled
+ */
 router.post('/paste', (req, res) => {
     const text = req.body.text || null;
     if (text == null || text.length == 0) {
@@ -23,6 +31,9 @@ router.post('/paste', (req, res) => {
     });
 });
 
+/**
+ * Reading paste
+ */
 router.get('/:id', (req, res) => {
     const paste = app.getPaste(req.params.id);
     if (paste == false) {
@@ -31,9 +42,12 @@ router.get('/:id', (req, res) => {
         return;
     }
 
-    res.send(paste);
+    res.render('read', {id: req.params.id, text: hljs.highlightAuto(paste).value});
 });
 
+/**
+ * Reading raw paste
+ */
 router.get('/raw/:id', (req, res) => {
     res.set('Content-Type', 'text/plain');
     

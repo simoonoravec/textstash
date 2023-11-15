@@ -55,8 +55,12 @@
     $("#clipboard-paste").on("click", async function(e) {
         e.preventDefault();
 
-        const clipboard = await navigator.clipboard.readText();
-        $("#text").val(clipboard);
+        try {
+            const clipboard = await navigator.clipboard.readText();
+            $("#text").val(clipboard);
+        } catch(e) {
+            showError("Unable to get text from clipboard! Maybe denied by browser?");
+        }
     });
 </script>
 <%- include('partials/footer') %>

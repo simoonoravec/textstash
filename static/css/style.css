@@ -44,6 +44,18 @@ footer img {
     display: none;
 }
 
+.input {
+    font-size: 16px;
+    padding: .3rem;
+    border: 1px solid #141414;
+    border-radius: 5px;
+}
+
+.input-lg {
+    font-size: 18px;
+    padding: .5rem;
+}
+
 /* Pasting */
 .textarea-paste {
     margin-top: 1rem;
@@ -94,6 +106,12 @@ footer img {
 
 .btn:hover {
     filter: brightness(1.1);
+}
+
+.btn-decrypt {
+    margin: auto;
+    margin-top: 1rem;
+    display: block;
 }
 
 .btn-blue {

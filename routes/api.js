@@ -8,13 +8,14 @@ const express = require('express'),
  */
 router.post('/paste', (req, res) => {
     const text = req.body.text || null;
+    const password = req.body.password || null;
     if (text == null || text.length == 0) {
         res.status(400);
         res.json({code: 400, "error": "No text received."});
         return;
     }
 
-    app.createPaste(text).then((id) => {
+    app.createPaste(text, password).then((id) => {
         res.json({code: 200, "paste_id": id});
     }).catch(() => {
         res.status(500);

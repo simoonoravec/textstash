@@ -1,0 +1,12 @@
+<%- include('partials/header') %>
+<h1>TextStash</h1>
+<div class="container" style="text-align: center;">
+    <% if (error) { %>
+        <div class="error" style="display: block;">Decryption failed. Wrong password?</div>
+    <% } %>
+    <form method="POST" action="/<%= id %>">
+        <input type="password" name="password" class="input input-lg" placeholder="Password">
+        <input type="submit" class="btn btn-decrypt btn-blue" value="Decrypt">
+    </form>
+</div>
+<%- include('partials/footer') %>

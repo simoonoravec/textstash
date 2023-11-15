@@ -1,5 +1,6 @@
 const config = require("./config");
 const fs = require('fs');
+const crypto = require('crypto');
 
 const logLevel = {
     DEBUG: "DEBUG",
@@ -11,8 +12,7 @@ const logLevel = {
 
 /**
  * 
- * @param {int} level Log level (1 = Production, 2 = Debug)
- * @param {int} type Log type (defined in js)
+ * @param {int} type Log level
  * @param {*} message Log message
  * @returns 
  */
@@ -58,4 +58,30 @@ function initializeDataDir(logLevel) {
     }
 }
 
-module.exports = { logLevel, log, initializeDataDir };
+function encrypt(text, key) {
+    key = crypto.createHash('sha256').update(key).digest();
+
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
+    let encrypted = cipher.update(text);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return {
+        iv: iv.toString('hex'),
+        data: encrypted.toString('hex')
+    };
+}
+
+function decrypt(encrypted, iv, key) {
+    key = crypto.createHash('sha256').update(key).digest();
+
+    try {
+        const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), Buffer.from(iv, 'hex'));
+        let decrypted = decipher.update(Buffer.from(encrypted, 'hex'));
+        decrypted = Buffer.concat([decrypted, decipher.final()]);
+        return decrypted.toString()
+    } catch(e) {
+        return false;
+    }
+}
+
+module.exports = { logLevel, log, initializeDataDir, encrypt, decrypt };

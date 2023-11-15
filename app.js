@@ -20,7 +20,7 @@ function createPaste(text) {
 
         let id;
         do {
-            id = crypto.randomBytes(4).toString('hex');
+            id = crypto.randomBytes(config.id_bytes).toString('hex');
         } while (fs.existsSync(config.data_dir + `/${id}`));
 
         helpers.log(helpers.logLevel.DEBUG, `Writing file ${id}`);

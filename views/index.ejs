@@ -2,16 +2,41 @@
 <h1>TextStash</h1>
 <div class="container">
     <form id="paste-form" method="POST" action="/paste">
-        <input type="submit" class="btn btn-blue" value="Stash">
+        <input type="submit" id="submit" class="btn btn-blue" value="Stash">
         <button class="btn hidden" id="clipboard-paste">Paste from clipboard</button>
-        <textarea class="textarea-paste" name="text" id="text" autofocus></textarea>
+        <div class="error" id="error"></div>
+        <textarea class="textarea-paste" name="text" id="text" autofocus required></textarea>
     </form>
 </div>
 <script>
     $("#clipboard-paste").show();
 
-    $("#paste-form").on("submit", function(e) {
+    let errPid = -1;
+    function showError(msg) {
+        $("#error").text(msg).fadeIn(500);
+
+        if (errPid != -1) {
+            clearTimeout(errPid);
+        }
+
+        errPid = setTimeout(() => {
+            $("#error").fadeOut(2000);
+            errPid = -1;
+        }, 10000);
+    }
+
+    $("#submit").on("click", function(e) {
         e.preventDefault();
+
+        if ($("#text").val().length == 0) {
+            showError("Cannot stash empty text!");
+            return;
+        }
+
+        if ((new TextEncoder().encode($("#text").val())).length > 5000000) {
+            showError("Text is too long!");
+            return;
+        }
 
         $.ajax({
             type: "POST",
@@ -22,7 +47,7 @@
                 window.location.href = data.paste_id;
             },
             error: function (err) {
-                alert("ERR");
+                showError(err.responseJSON.error);
             }
         });
     });

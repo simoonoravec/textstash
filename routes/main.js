@@ -19,7 +19,7 @@ router.post('/paste', (req, res) => {
     const text = req.body.text || null;
     if (text == null || text.length == 0) {
         res.status(400);
-        res.send("400 - Bad request (no text received)")
+        res.render('error', {error: "Error 400<br>Bad request (no input)"})
         return;
     }
 
@@ -27,7 +27,7 @@ router.post('/paste', (req, res) => {
         res.redirect(`/${id}`);
     }).catch(() => {
         res.status(500);
-        res.send("500 - Internal error")
+        res.render('error', {error: "Error 500<br>Internal server error."})
     });
 });
 

@@ -17,13 +17,14 @@ router.get('/', (req, res) => {
  */
 router.post('/paste', (req, res) => {
     const text = req.body.text || null;
+    const password = req.body.password || null;
     if (text == null || text.length == 0) {
         res.status(400);
         res.render('error', {error: "Error 400<br>Bad request (no input)"})
         return;
     }
 
-    app.createPaste(text).then((id) => {
+    app.createPaste(text, password).then((id) => {
         res.redirect(`/${id}`);
     }).catch(() => {
         res.status(500);

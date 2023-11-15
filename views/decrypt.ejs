@@ -4,9 +4,11 @@
     <% if (error) { %>
         <div class="error" style="display: block;">Decryption failed. Wrong password?</div>
     <% } %>
+    <p>This paste is encrypted, please enter the password below to view it:</p>
     <form method="POST" action="/<%= id %>">
         <input type="password" name="password" class="input input-lg" placeholder="Password">
         <input type="submit" class="btn btn-decrypt btn-blue" value="Decrypt">
     </form>
+    <p style="margin-top: 3rem;"><small>Please note that there is no way to decrypt the paste without<br>the password even with direct access to the file.</small></p>
 </div>
 <%- include('partials/footer') %>

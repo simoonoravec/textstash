@@ -87,6 +87,11 @@ router.post('/:id', (req, res) => {
  */
 router.get('/decrypt/:id', (req, res) => {
     const error = req.query.wrongpass != null ? true : false;
+    
+    if (!app.existsEncrypted(req.params.id)) {
+        res.redirect(`/${req.params.id}`);
+        return;
+    }
 
     res.render('decrypt', {id: req.params.id, error});
 });

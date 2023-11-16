@@ -164,8 +164,18 @@ function getTimeUntilDeletion(id) {
         return false;
     }
 
+    let path;
+    if (fs.existsSync(config.data_dir + `/${id}`)) {
+        path = config.data_dir + `/${id}`;
+    }
+    else if (fs.existsSync(config.data_dir + `/${id}.enc`)) {
+        path = config.data_dir + `/${id}.enc`;
+    } else {
+        return false;
+    }
+
     try {
-        let diffMinutes = config.delete_after * 60 - (new Date() - fs.statSync(config.data_dir + `/${id}`).mtime) / (1000 * 60);
+        let diffMinutes = config.delete_after * 60 - (new Date() - fs.statSync(path).mtime) / (1000 * 60);
 
         if (diffMinutes < 1) {
             return "<1 minute";

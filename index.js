@@ -13,35 +13,43 @@ helpers.log(helpers.logLevel.INFO, `Initializing data directory...`);
 helpers.initializeDataDir(helpers.logLevel.INFO);
 
 /**
+ * Initialize cleanup
+ */
+if (config.delete_after > 0) {
+    helpers.deleteExpiredFiles(config.delete_after);
+    setInterval(() => helpers.deleteExpiredFiles(config.delete_after), 60000);
+}
+
+/**
  * Initialize app
  */
 helpers.log(helpers.logLevel.INFO, `Initializing Web server (Express)`);
 const express = require('express');
-const app = express();
+const webServer = express();
 
-app.use(require('body-parser').urlencoded({ extended: false, limit: '1mb' }));
-app.set('view engine', 'ejs');
-app.use(express.static('static'));
+webServer.use(require('body-parser').urlencoded({ extended: false, limit: '1mb' }));
+webServer.set('view engine', 'ejs');
+webServer.use(express.static('static'));
 
-app.use(function(req, res, next) {
+webServer.use(function(req, res, next) {
     helpers.log(helpers.logLevel.DEBUG, `[HTTP] Request form ${req.ip} at ${req.path}`);
 
     next();
 });
 
-app.use("/", require("./routes/main"));
-app.use("/api", require("./routes/api"));
+webServer.use("/", require("./routes/main"));
+webServer.use("/api", require("./routes/api"));
 
 /* Catch all API URLs and show 404 */
-app.all('/api/*', (req, res) => {
+webServer.all('/api/*', (req, res) => {
     res.json({code: 404, error: "API not found or invalid method."});
 });
 
 /* Catch all URLs and redirect to homepage */
-app.all('*', (req, res) => {
+webServer.all('*', (req, res) => {
     res.redirect("/");
 });
 
-app.listen(config.http_port, () => {
+webServer.listen(config.http_port, () => {
     helpers.log(helpers.logLevel.INFO, `TextStash Web server listening on port ${config.http_port}`);
 });

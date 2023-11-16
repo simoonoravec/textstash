@@ -154,4 +154,38 @@ function getPasteEncrypted(id, password) {
     return decrypted;
 }
 
-module.exports = { createPaste, getPaste, getPasteEncrypted, pasteExists, pasteExistsEncrypted };
+/**
+ * Get human readable time until the deletion of a paste
+ * @param {int} id Paste ID
+ * @returns String
+ */
+function getTimeUntilDeletion(id) {
+    if (config.delete_after < 1) {
+        return false;
+    }
+
+    try {
+        let diffMinutes = config.delete_after * 60 - (new Date() - fs.statSync(config.data_dir + `/${id}`).mtime) / (1000 * 60);
+
+        if (diffMinutes < 1) {
+            return "<1 minute";
+        }
+
+        diffMinutes = Math.round(diffMinutes);
+        if (diffMinutes < 60) {
+            return diffMinutes + " minute" + (diffMinutes > 1 ? 's' : '');
+        }
+
+        let diffHours = Math.round(diffMinutes / 60);
+        if (diffHours < 24) {
+            return diffHours + " hour" + (diffHours > 1 ? 's' : '');
+        }
+
+        let diffDays = Math.round(diffHours / 24);
+        return diffDays + " day" + (diffDays > 1 ? 's' : '');
+    } catch {
+        return false;
+    }
+}
+
+module.exports = { createPaste, getPaste, getPasteEncrypted, pasteExists, pasteExistsEncrypted, getTimeUntilDeletion };

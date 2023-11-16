@@ -5,7 +5,7 @@
         <input type="submit" id="submit" class="btn btn-blue" value="Stash">
         <button class="btn hidden" id="clipboard-paste">Paste from clipboard</button>
         <input type="password" class="input" name="password" id="password" placeholder="Password (optional)">
-        <div class="error" id="error"></div>
+        <div class="error" id="error"><span id="error-text"></span></div>
         <textarea class="textarea-paste" name="text" id="text" autofocus required></textarea>
     </form>
 </div>
@@ -14,7 +14,8 @@
 
     let errPid = -1;
     function showError(msg) {
-        $("#error").text(msg).fadeIn(500);
+        $("#error-text").text(msg);
+        $("#error").fadeIn(500);
 
         if (errPid != -1) {
             clearTimeout(errPid);
@@ -23,7 +24,7 @@
         errPid = setTimeout(() => {
             $("#error").fadeOut(2000);
             errPid = -1;
-        }, 10000);
+        }, 5000);
     }
 
     $("#submit").on("click", function(e) {

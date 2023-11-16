@@ -3,6 +3,9 @@
 <div class="container">
     <a href="/"><button class="btn btn-blue">New stash</button></a>
     <a href="/raw/<%= id %>"><button class="btn">View raw</button></a>
+    <% if (delTime != false) { %>
+        <p class="deletion-notice"><span>This paste will expire in <b><%= delTime %></b></span></p>
+        <% } %>
     <div class="viewbox">
         <pre><code><%- text %></code></pre>
     </div>

@@ -90,7 +90,7 @@ footer img {
 
 .viewbox pre {
     word-wrap: break-word;
-    text-wrap: wrap;
+    white-space: break-spaces;
 }
 
 .deletion-notice {

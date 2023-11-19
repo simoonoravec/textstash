@@ -2,6 +2,7 @@
 <div class="toolbar">
     <a href="/"><button class="btn btn-blue">New paste</button></a>
     <a href="/raw/<%= id %>"><button class="btn">View raw</button></a>
+    <button class="btn" id="download">Download</button>
     <div class="toolbar-right">
         <p>
             <a href="https://github.com/simoonoravec/textstash" target="_blank"><img class="github-logo" src="/img/github.png" alt="GitHub Logo"></a>
@@ -15,4 +16,22 @@
 <div class="textarea viewbox">
     <pre><code><%- text %></code></pre>
 </div>
+<script>
+    $("#download").on("click", function() {
+         downloadText('<%= id %>.txt', atob('<%= textB64 %>'));
+    });
+
+    function downloadText(filename, text) {
+        var el = document.createElement('a');
+        el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        el.setAttribute('download', filename);
+
+        el.style.display = 'none';
+        document.body.appendChild(el);
+
+        el.click();
+
+        document.body.removeChild(el);
+      }
+</script>
 <%- include('partials/footer') %>

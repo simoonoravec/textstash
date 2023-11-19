@@ -104,10 +104,8 @@ h1 {
 }
 
 @media screen and (max-width: 768px) {
-    .deletion-notice {
-        float: unset;
-        display: block;
-        margin: 1rem 0;
+    .toolbar-right {
+        display: none;
     }
 }
 

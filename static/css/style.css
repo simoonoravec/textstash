@@ -90,6 +90,10 @@ h1 {
 }
 
 /* Viewing */
+.viewbox {
+    overflow-y: auto;
+}
+
 .viewbox pre {
     word-wrap: break-word;
     white-space: break-spaces;

@@ -1,21 +1,22 @@
 <%- include('partials/header') %>
-<h1>TextStash</h1>
-<div class="container">
-    <form id="paste-form" method="POST" action="/paste">
-        <input type="submit" id="submit" class="btn btn-blue" value="Stash">
-        <button class="btn hidden" id="clipboard-paste">Paste from clipboard</button>
+<form id="paste-form" method="POST" action="/paste">
+    <div class="toolbar">
+        <button type="submit" id="save" class="btn-save"><img src="/img/save.svg"></button>
         <input type="password" class="input" name="password" id="password" placeholder="Password (optional)">
         <div class="error" id="error"><span id="error-text"></span></div>
-        <textarea class="textarea-paste" name="text" id="text" autofocus required></textarea>
-    </form>
-</div>
+        <div class="toolbar-right">
+            <h2>TextStash <a href="https://github.com/simoonoravec/textstash" target="_blank"><img class="github-logo" src="/img/github.png" alt="GitHub Logo"></a></h2>
+        </div>
+    </div>
+    <textarea class="textarea" name="text" id="text" autofocus required></textarea>
+</form>
 <script>
     $("#clipboard-paste").show();
 
     let errPid = -1;
     function showError(msg) {
         $("#error-text").text(msg);
-        $("#error").fadeIn(500);
+        $("#error").fadeIn(500).css("display","inline-block");;
 
         if (errPid != -1) {
             clearTimeout(errPid);
@@ -27,7 +28,7 @@
         }, 5000);
     }
 
-    $("#submit").on("click", function(e) {
+    $("#save").on("click", function(e) {
         e.preventDefault();
 
         if ($("#text").val().length == 0) {
@@ -52,17 +53,6 @@
                 showError(err.responseJSON.error);
             }
         });
-    });
-
-    $("#clipboard-paste").on("click", async function(e) {
-        e.preventDefault();
-
-        try {
-            const clipboard = await navigator.clipboard.readText();
-            $("#text").val(clipboard);
-        } catch(e) {
-            showError("Unable to get text from clipboard! Maybe denied by browser?");
-        }
     });
 </script>
 <%- include('partials/footer') %>

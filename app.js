@@ -81,20 +81,52 @@ function _createPasteEncrypted(text, password) {
     });
 }
 
-function pasteExists(id) {
+/**
+ * Get a paste
+ * @param {*} id Paste ID
+ * @param {*} password Password (optional)
+ * @returns JSON {found: true|false, encrypted: true|false, data: pasteData}
+ */
+function getPaste(id, password = null) {
     if (!(/^[a-zA-Z0-9]+$/).test(id)) {
+        return {
+            found: false
+        }
+    }
+
+    if (helpers.initializeDataDir(helpers.logLevel.DEBUG) == false) {
         return false;
     }
 
-    return fs.existsSync(config.data_dir + `/${id}`) || fs.existsSync(config.data_dir + `/${id}.enc`);
-}
+    const pasteExists = fs.existsSync(config.data_dir + `/${id}`);
+    const pasteExistsEncrypted = fs.existsSync(config.data_dir + `/${id}.enc`);
 
-function pasteExistsEncrypted(id) {
-    if (!(/^[a-zA-Z0-9]+$/).test(id)) {
-        return false;
+    if (pasteExists) {
+        return {
+            found: true,
+            encrypted: false,
+            data: _getPaste(id)
+        }
+    }
+    if (pasteExistsEncrypted) {
+        if (password == null || password.length == 0) {
+            return {
+                found: true,
+                encrypted: true,
+                data: false
+            }
+        }
+
+        return {
+            found: true,
+            encrypted: true,
+            data: _getPasteEncrypted(id, password)
+        }
     }
 
-    return fs.existsSync(config.data_dir + `/${id}.enc`);
+    return {
+        found: false
+    }
 }
 
 /**
@@ -102,23 +134,18 @@ function pasteExistsEncrypted(id) {
  * @param {string} id Paste ID
  * @returns string | false
  */
-function getPaste(id) {
-    if (!(/^[a-zA-Z0-9]+$/).test(id)) {
-        return false;
-    }
-
-    if (helpers.initializeDataDir(helpers.logLevel.DEBUG) == false) {
-        return false;
-    }
-
+function _getPaste(id) {
     helpers.log(helpers.logLevel.DEBUG, `Reading file ${id}`);
-    if (!fs.existsSync(config.data_dir + `/${id}`)) {
-        helpers.log(helpers.logLevel.DEBUG, `Failed reading file ${id} - Not found`);
+
+    try {
+        const data = fs.readFileSync(config.data_dir + `/${id}`, 'utf8');
+        helpers.log(helpers.logLevel.DEBUG, `Read file ${id} OK`);
+        return data;
+    } catch(err) {
+        helpers.log(helpers.logLevel.DEBUG, `Error reading file ${id}`);
+        console.error(err);
         return false;
     }
-
-    helpers.log(helpers.logLevel.DEBUG, `Read file ${id} OK`);
-    return fs.readFileSync(config.data_dir + `/${id}`, 'utf8');
 }
 
 /**
@@ -127,31 +154,25 @@ function getPaste(id) {
  * @param {string} password Password
  * @returns string | false
  */
-function getPasteEncrypted(id, password) {
-    if (!(/^[a-zA-Z0-9]+$/).test(id)) {
-        return false;
-    }
-
-    if (helpers.initializeDataDir(helpers.logLevel.DEBUG) == false) {
-        return false;
-    }
-
+function _getPasteEncrypted(id, password) {
     helpers.log(helpers.logLevel.DEBUG, `Reading file ${id}`);
-    if (!fs.existsSync(config.data_dir + `/${id}.enc`)) {
-        helpers.log(helpers.logLevel.DEBUG, `Failed reading file ${id} - Not found`);
+
+    try {
+        const raw = fs.readFileSync(config.data_dir + `/${id}.enc`, 'utf8').split(':');
+        helpers.log(helpers.logLevel.DEBUG, `Read file ${id} OK`);
+
+        const decrypted = helpers.decrypt(raw[1], raw[0], password);
+    
+        if (decrypted == false) {
+            return false;
+        }
+        
+        return decrypted;
+    } catch(err) {
+        helpers.log(helpers.logLevel.DEBUG, `Error reading file ${id}`);
+        console.error(err);
         return false;
     }
-
-    helpers.log(helpers.logLevel.DEBUG, `Read file ${id} OK`);
-    
-    const raw = fs.readFileSync(config.data_dir + `/${id}.enc`, 'utf8').split(':');
-    const decrypted = helpers.decrypt(raw[1], raw[0], password);
-
-    if (decrypted == false) {
-        return false;
-    }
-    
-    return decrypted;
 }
 
 /**
@@ -198,4 +219,4 @@ function getTimeUntilDeletion(id) {
     }
 }
 
-module.exports = { createPaste, getPaste, getPasteEncrypted, pasteExists, pasteExistsEncrypted, getTimeUntilDeletion };
+module.exports = { createPaste, getPaste, getTimeUntilDeletion };

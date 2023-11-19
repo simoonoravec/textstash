@@ -1,13 +1,18 @@
 <%- include('partials/header') %>
-<h1>TextStash</h1>
-<div class="container">
+<div class="toolbar">
     <a href="/"><button class="btn btn-blue">New stash</button></a>
     <a href="/raw/<%= id %>"><button class="btn">View raw</button></a>
-    <% if (delTime != false) { %>
-        <p class="deletion-notice"><span>This paste will expire in <b><%= delTime %></b></span></p>
-        <% } %>
-    <div class="viewbox">
-        <pre><code><%- text %></code></pre>
+    <div class="toolbar-right">
+        <p>
+            <a href="https://github.com/simoonoravec/textstash" target="_blank"><img class="github-logo" src="/img/github.png" alt="GitHub Logo"></a>
+            <% if (delTime != false) { %>
+                <span class="deletion-notice">This paste will expire in&nbsp;<b><%= delTime %></b></span>
+            <% } %>
+        </p>
     </div>
+
+</div>
+<div class="textarea viewbox">
+    <pre><code><%- text %></code></pre>
 </div>
 <%- include('partials/footer') %>

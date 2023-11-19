@@ -1,8 +1,7 @@
 <%- include('partials/header') %>
-<h1>TextStash</h1>
 <div class="container" style="text-align: center;">
     <% if (error) { %>
-        <div class="error" style="display: block;">Decryption failed. Wrong password?</div>
+        <div class="error" style="display: block;margin-top:2rem;"><span>Decryption failed. Wrong password?</span></div>
     <% } %>
     <p>This paste is encrypted, please enter the password below to view it:</p>
     <form method="POST" action="/<%= id %>">

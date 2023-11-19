@@ -22,16 +22,18 @@
     });
 
     function downloadText(filename, text) {
-        var el = document.createElement('a');
-        el.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-        el.setAttribute('download', filename);
+        var blob = new Blob([text], {type: 'text/plain'});
+        var url = window.URL.createObjectURL(blob);
 
-        el.style.display = 'none';
-        document.body.appendChild(el);
+        var link = $('<a>', {
+          href: url,
+          download: filename
+        }).appendTo('body');
 
-        el.click();
+        link[0].click();
 
-        document.body.removeChild(el);
+        link.remove();
+        window.URL.revokeObjectURL(url);
       }
 </script>
 <%- include('partials/footer') %>

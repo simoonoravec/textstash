@@ -18,7 +18,7 @@ const logLevel = {
  * @returns 
  */
 function log(type, message) {
-    if (type == logLevel.DEBUG && config.log_level != 2) {
+    if (type == logLevel.DEBUG && process.env.NODE_ENV != "development") {
         return;
     }
 

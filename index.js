@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const config = require('./config');
 const helpers = require('./helpers');
 
@@ -49,6 +51,17 @@ webServer.all('/api/*', (req, res) => {
 webServer.all('*', (req, res) => {
     res.redirect("/");
 });
+
+if (process.env.NODE_ENV != "development") {
+    webServer.use((err, req, res, next) => {
+        if (err) {
+            res.sendStatus(500);
+            return;
+        }
+         
+        next();
+    });
+}
 
 webServer.listen(config.http_port, () => {
     helpers.log(helpers.logLevel.INFO, `TextStash Web server listening on port ${config.http_port}`);

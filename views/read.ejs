@@ -18,7 +18,7 @@
 </div>
 <script>
     $("#download").on("click", function() {
-         downloadText('<%= id %>.txt', atob('<%= textB64 %>'));
+        downloadText('<%= id %>.txt', atob('<%= textB64 %>'));
     });
 
     function downloadText(filename, text) {
@@ -26,14 +26,15 @@
         var url = window.URL.createObjectURL(blob);
 
         var link = $('<a>', {
-          href: url,
-          download: filename
+        href: url,
+        download: filename
         }).appendTo('body');
 
         link[0].click();
 
         link.remove();
         window.URL.revokeObjectURL(url);
-      }
+        resolve();
+    }
 </script>
 <%- include('partials/footer') %>

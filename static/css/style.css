@@ -113,7 +113,6 @@ h1 {
     }
 }
 
-
 /* Buttons */
 .btn {
     padding: .25rem 1rem;
@@ -129,6 +128,11 @@ h1 {
 
 .btn:hover {
     filter: brightness(1.1);
+}
+
+.btn:disabled {
+    filter: brightness(0.9);
+    cursor: default;
 }
 
 .btn-save {
@@ -155,4 +159,26 @@ h1 {
 
 .btn-blue {
     background-color: #085ecf;
+}
+
+/* Loading */
+.loader {
+    height: 16px;
+    width: 16px;
+    border: 2px solid #FFF;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: middle;
+    animation: loaderRotation 1s linear infinite;
+}
+
+@keyframes loaderRotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }

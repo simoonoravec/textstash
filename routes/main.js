@@ -92,7 +92,7 @@ router.post('/:id', (req, res) => {
 
     const delTime = app.getTimeUntilDeletion(req.params.id);
 
-    res.render('read', {id: req.params.id, text: hljs.highlightAuto(paste.data).value, delTime});
+    res.render('read', {id: req.params.id, text: hljs.highlightAuto(paste.data).value, textB64: btoa(paste.data), delTime});
 });
 
 /**

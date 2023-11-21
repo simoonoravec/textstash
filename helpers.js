@@ -1,14 +1,14 @@
-const config = require("./config");
+const config = require('./config');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
 const logLevel = {
-    DEBUG: "DEBUG",
-    INFO: "INFO",
-    NOTICE: "NOTICE",
-    WARNING: "WARNING",
-    ERROR: "ERROR"
+    DEBUG: 'DEBUG',
+    INFO: 'INFO',
+    NOTICE: 'NOTICE',
+    WARNING: 'WARNING',
+    ERROR: 'ERROR'
 }
 
 /**
@@ -18,7 +18,7 @@ const logLevel = {
  * @returns 
  */
 function log(type, message) {
-    if (type == logLevel.DEBUG && process.env.NODE_ENV != "development") {
+    if (type == logLevel.DEBUG && process.env.NODE_ENV != 'development') {
         return;
     }
 
@@ -26,7 +26,7 @@ function log(type, message) {
         return;
     }
 
-    const time = new Date().toLocaleTimeString("eu");
+    const time = new Date().toLocaleTimeString('eu');
     
     console.log(`[${time}][${type}]: ${message}`);
 }
@@ -40,11 +40,11 @@ function log(type, message) {
 function initializeDataDir(logLevel) {
     try {
         if (!fs.existsSync(data_dir)) {
-            log(logLevel, "Data directory doesn't exist, creating it.")
+            log(logLevel, 'Data directory doesn\'t exist, creating it.')
             fs.mkdirSync(data_dir);
         } else {
             if (!fs.statSync(data_dir).isDirectory()) {
-                log(logLevel, "Data directory is not a directory, recreating.")
+                log(logLevel, 'Data directory is not a directory, recreating.')
                 fs.unlink(data_dir, () => {
                     fs.mkdirSync(data_dir);
                 });
@@ -105,7 +105,7 @@ function decrypt(encrypted, iv, key) {
 function deleteExpiredFiles(expiry) {
     fs.readdir(config.data_dir, (err, files) => {
         if (err) {
-            log(logLevel.NOTICE, "[CLEANER] Failed to read data directory.");
+            log(logLevel.NOTICE, '[CLEANER] Failed to read data directory.');
             return;
         }
 
@@ -116,17 +116,17 @@ function deleteExpiredFiles(expiry) {
             
             fs.stat(filePath, (err, stats) => {
                 if (err) {
-                    log(logLevel.NOTICE, "[CLEANER] Error reading file: "+file);
+                    log(logLevel.NOTICE, '[CLEANER] Error reading file: '+file);
                     return;
                 }
 
                 if (stats.mtime < olderThanLimit) {
                     fs.unlink(filePath, (err) => {
                         if (err) {
-                            log(logLevel.NOTICE, "[CLEANER] Error deleting file: "+file);
+                            log(logLevel.NOTICE, '[CLEANER] Error deleting file: '+file);
                             return;
                         }
-                        log(logLevel.DEBUG, "[CLEANER] Deleted expired file: "+file);
+                        log(logLevel.DEBUG, '[CLEANER] Deleted expired file: '+file);
                     });
                 }
             });

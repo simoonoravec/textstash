@@ -1,51 +1,51 @@
 <%- include('partials/header') %>
 <form id="paste-form" method="POST" action="/paste">
     <div class="toolbar">
-        <button type="submit" id="save" class="btn-save"><img src="/img/save.svg"></button>
+        <button type="submit" id="save" class="btn-save"><img src="/static/img/save.svg"></button>
         <input type="password" class="input" name="password" id="password" placeholder="Password (optional)">
         <div class="error" id="error"><span id="error-text"></span></div>
         <div class="toolbar-right">
-            <h2>TextStash <a href="https://github.com/simoonoravec/textstash" target="_blank"><img class="github-logo" src="/img/github.png" alt="GitHub Logo"></a></h2>
+            <h2>TextStash <a href="https://github.com/simoonoravec/textstash" target="_blank"><img class="github-logo" src="/static/img/github.png" alt="GitHub Logo"></a></h2>
         </div>
     </div>
     <textarea class="textarea" name="text" id="text" autofocus required></textarea>
 </form>
 <script>
-    $("#clipboard-paste").show();
+    $('#clipboard-paste').show();
 
     let errPid = -1;
     function showError(msg) {
-        $("#error-text").text(msg);
-        $("#error").fadeIn(500).css("display","inline-block");;
+        $('#error-text').text(msg);
+        $('#error').fadeIn(500).css('display', 'inline-block');;
 
         if (errPid != -1) {
             clearTimeout(errPid);
         }
 
         errPid = setTimeout(() => {
-            $("#error").fadeOut(2000);
+            $('#error').fadeOut(2000);
             errPid = -1;
         }, 5000);
     }
 
-    $("#save").on("click", function(e) {
+    $('#save').on('click', function(e) {
         e.preventDefault();
 
-        if ($("#text").val().length == 0) {
-            showError("Cannot stash empty text!");
+        if ($('#text').val().length == 0) {
+            showError('Cannot stash empty text!');
             return;
         }
 
-        if ((new TextEncoder().encode($("#text").val())).length > 5000000) {
-            showError("Text is too long!");
+        if ((new TextEncoder().encode($('#text').val())).length > 5000000) {
+            showError('Text is too long!');
             return;
         }
 
         $.ajax({
-            type: "POST",
-            url: "/api/paste",
-            data: $("#paste-form").serialize(),
-            dataType: "json",
+            type: 'POST',
+            url: '/api/paste',
+            data: $('#paste-form').serialize(),
+            dataType: 'json',
             success: function (data) {
                 window.location.href = data.paste_id;
             },

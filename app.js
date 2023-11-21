@@ -199,21 +199,21 @@ function getTimeUntilDeletion(id) {
         let diffMinutes = config.delete_after * 60 - (new Date() - fs.statSync(path).mtime) / (1000 * 60);
 
         if (diffMinutes < 1) {
-            return "<1 minute";
+            return '<1 minute';
         }
 
         diffMinutes = Math.round(diffMinutes);
         if (diffMinutes < 60) {
-            return diffMinutes + " minute" + (diffMinutes > 1 ? 's' : '');
+            return diffMinutes + ' minute' + (diffMinutes > 1 ? 's' : '');
         }
 
         let diffHours = Math.round(diffMinutes / 60);
         if (diffHours < 24) {
-            return diffHours + " hour" + (diffHours > 1 ? 's' : '');
+            return diffHours + ' hour' + (diffHours > 1 ? 's' : '');
         }
 
         let diffDays = Math.round(diffHours / 24);
-        return diffDays + " day" + (diffDays > 1 ? 's' : '');
+        return diffDays + ' day' + (diffDays > 1 ? 's' : '');
     } catch {
         return false;
     }

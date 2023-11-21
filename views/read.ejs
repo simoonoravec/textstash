@@ -5,7 +5,7 @@
     <button class="btn" id="download">Download</button>
     <div class="toolbar-right">
         <p>
-            <a href="https://github.com/simoonoravec/textstash" target="_blank"><img class="github-logo" src="/img/github.png" alt="GitHub Logo"></a>
+            <a href="https://github.com/simoonoravec/textstash" target="_blank"><img class="github-logo" src="/static/img/github.png" alt="GitHub Logo"></a>
             <% if (delTime != false) { %>
                 <span class="deletion-notice">This paste will expire in&nbsp;<b><%= delTime %></b></span>
             <% } %>
@@ -17,7 +17,7 @@
     <pre><code><%- text %></code></pre>
 </div>
 <script>
-    $("#download").on("click", function() {
+    $('#download').on('click', function() {
         downloadText('<%= id %>.txt', atob('<%= textB64 %>'));
     });
 

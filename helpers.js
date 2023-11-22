@@ -95,7 +95,6 @@ function _generateIDrandom() {
  * @returns ID
  */
 function _generateIDphoenic() {
-    console.log(Math.random() + ' ' + Math.random());
     const UNGconfig = {
         dictionaries: [UNGadjectives, UNGcolors, (Math.random() > Math.random() ? UNGanimals : UNGnames)],
         separator: '-',

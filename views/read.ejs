@@ -2,6 +2,7 @@
 <div class="toolbar">
     <a href="/"><button class="btn btn-blue">New paste</button></a>
     <a href="/raw/<%= id %>"><button class="btn">View raw</button></a>
+    <button class="btn" id="copy">Copy</button>
     <button class="btn" id="download">Download</button>
     <div class="toolbar-right">
         <p>
@@ -17,8 +18,16 @@
     <pre><code><%- text %></code></pre>
 </div>
 <script>
+    const rawText = atob('<%= textB64 %>');
+
+    $('#copy').on('click', function() {
+        navigator.clipboard.writeText(rawText)
+            .then(() => alert("Copied to clipboard!"))
+            .catch(() => alert("Unable to copy to clipbard!\nMaybe your browser is blocking it?"));
+    });
+
     $('#download').on('click', function() {
-        downloadText('<%= id %>.txt', atob('<%= textB64 %>'));
+        downloadText('<%= id %>.txt', rawText);
     });
 
     function downloadText(filename, text) {

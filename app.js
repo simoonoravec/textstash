@@ -32,7 +32,7 @@ function _createPaste(text) {
             reject();
         }
 
-        let id = crypto.randomBytes(config.id_bytes).toString('hex');
+        let id = helpers.generateID();
 
         helpers.log(helpers.logLevel.DEBUG, `Writing file ${id}`);
         try {
@@ -63,7 +63,7 @@ function _createPasteEncrypted(text, password) {
             reject();
         }
 
-        let id = crypto.randomBytes(config.id_bytes).toString('hex');
+        let id = helpers.generateID();
 
         const encrypted = helpers.encrypt(text, password);
         text = `${encrypted.iv}:${encrypted.data}`;
@@ -88,7 +88,7 @@ function _createPasteEncrypted(text, password) {
  * @returns JSON {found: true|false, encrypted: true|false, data: pasteData}
  */
 function getPaste(id, password = null) {
-    if (!(/^[a-zA-Z0-9]+$/).test(id)) {
+    if (!(/^[a-zA-Z0-9-]+$/).test(id)) {
         return {
             found: false
         }

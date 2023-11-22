@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
+const { uniqueNamesGenerator, adjectives: UNGadjectives, colors: UNGcolors, animals: UNGanimals, names: UNGnames } = require('unique-names-generator');
+
 const logLevel = {
     DEBUG: 'DEBUG',
     INFO: 'INFO',
@@ -57,6 +59,64 @@ function initializeDataDir(logLevel) {
         console.error(err);
         process.exit(1);
     }
+}
+
+/**
+ * Generate an ID for a paste
+ * @returns ID
+ */
+function generateID() {
+    if (config.id_generator == 'phoenic') {
+        return _generateIDphoenic();
+    }
+
+    return _generateIDrandom();
+}
+
+/**
+ * Generate a random string ID (a-z, A-Z, 0-9)
+ * @returns ID
+ */
+function _generateIDrandom() {
+    let id = crypto.randomBytes(config.id_bytes).toString('hex');
+    
+    // This is probably unnecessary but it will make sure that you basically never run out of IDs
+    let i = 1;
+    while (fs.existsSync(config.data_dir + `/${id}`) || fs.existsSync(config.data_dir + `/${id}.enc`)) {
+        id = crypto.randomBytes(config.id_bytes + i).toString('hex');
+        i++;
+    }
+
+    return id;
+}
+
+/**
+ * Generate a phoenic ID (example: stable-crimson-porpoise)
+ * @returns ID
+ */
+function _generateIDphoenic() {
+    console.log(Math.random() + ' ' + Math.random());
+    const UNGconfig = {
+        dictionaries: [UNGadjectives, UNGcolors, (Math.random() > Math.random() ? UNGanimals : UNGnames)],
+        separator: '-',
+        style: 'lowerCase'
+    }
+
+    let id = uniqueNamesGenerator(UNGconfig);
+
+    // This is probably unnecessary but it will make sure that you basically never run out of IDs
+    let i = 0;
+    while (fs.existsSync(config.data_dir + `/${id}`) || fs.existsSync(config.data_dir + `/${id}.enc`)) {
+        id = uniqueNamesGenerator(UNGconfig);
+
+        i++;
+        if (i == 5) {
+            id = _generateIDrandom();
+            break;
+        }
+    }
+
+    return id;
 }
 
 /**
@@ -134,4 +194,4 @@ function deleteExpiredFiles(expiry) {
     });
 }
 
-module.exports = { logLevel, log, initializeDataDir, encrypt, decrypt, deleteExpiredFiles };
+module.exports = { logLevel, log, initializeDataDir, generateID, encrypt, decrypt, deleteExpiredFiles };

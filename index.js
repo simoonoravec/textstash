@@ -1,6 +1,36 @@
 require('dotenv').config();
+const fs = require('fs');
 
+if (!fs.existsSync(__dirname + '/config.js')) {
+    console.error('Config file not found!');
+    process.exit(1);
+}
 const config = require('./config');
+
+//Validate config
+if (
+    !config.http_port
+    || typeof config.http_port != 'number'
+    || config.http_port % 1 != 0
+
+    || !config.data_dir
+    || config.data_dir.length == 0
+    
+    || !config.id_generator
+    || !['random', 'phoenic'].includes(config.id_generator)
+
+    || !config.id_bytes
+    || config.id_bytes < 1
+    || config.id_bytes % 1 != 0
+
+    || !config.delete_after
+    || config.delete_after < 0
+    || config.delete_after % 1 != 0
+) {
+    console.error('Invalid config file! (Missing or invalid variables)');
+    process.exit(1);
+}
+
 const helpers = require('./helpers');
 
 helpers.log(helpers.logLevel.INFO, `TextStash starting up...`);

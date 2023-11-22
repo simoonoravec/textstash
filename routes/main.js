@@ -126,7 +126,9 @@ router.get('/decrypt/:id', (req, res) => {
  */
 router.get('/raw/:id', (req, res) => {
     res.set('Content-Type', 'text/plain');
-    const paste = app.getPaste(req.params.id);
+    
+    const password = req.get('paste-password') || null;
+    const paste = app.getPaste(req.params.id, password);
     if (paste == false) {
         res.status(500);
         res.render('error', {error: 'Error 500<br>Internal server error.'});
@@ -139,9 +141,17 @@ router.get('/raw/:id', (req, res) => {
         return;
     }
 
-    if (paste.encrypted) {
+    if (paste.encrypted && paste.data == false) {
         res.status(401);
-        res.send(`This paste is encrypted. To show raw encrypted paste, you need to pass the password in the URL. Format: /raw/${req.params.id}/<password>`);
+        if (password == null || password.length == 0) {
+            res.send(`THIS PASTE IS ENCRYPTED
+            \n\nThis app currently offers 2 methods of accessing encrypted files in raw format:
+            \nMethod 1:\nYou specify the password in the URL, like this: /raw/${req.params.id}/<password>
+            \nMethod 2:\nYou specify the password in a header named "paste-password" (make sure to use the URL without the "/<password>" part)\n`);
+            return;
+        }
+
+        res.send('Decryption failed. Wrong password?');
         return;
     }
 

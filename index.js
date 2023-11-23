@@ -31,31 +31,31 @@ if (
     process.exit(1);
 }
 
-const helpers = require('./helpers');
+const { log, logLevel } = require('./app/logger');
+const utils = require('./app/utils');
+const cleaner = require('./app/cleaner');
 
-helpers.log(helpers.logLevel.INFO, `TextStash starting up...`);
 
-const data_dir = config.data_dir;
-global.data_dir = data_dir;
+log(logLevel.INFO, `TextStash starting up...`);
 
 /**
  * Initialize data directory
  */
-helpers.log(helpers.logLevel.INFO, `Initializing data directory...`);
-helpers.initializeDataDir(helpers.logLevel.INFO);
+log(logLevel.INFO, `Initializing data directory...`);
+utils.initializeDataDir(logLevel.INFO);
 
 /**
  * Initialize cleanup
  */
 if (config.delete_after > 0) {
-    helpers.deleteExpiredFiles(config.delete_after);
-    setInterval(() => helpers.deleteExpiredFiles(config.delete_after), 60000);
+    cleaner.deleteExpiredFiles(config.delete_after);
+    setInterval(() => cleaner.deleteExpiredFiles(config.delete_after), 60000);
 }
 
 /**
- * Initialize app
+ * Initialize Web server
  */
-helpers.log(helpers.logLevel.INFO, `Initializing Web server (Express)`);
+log(logLevel.INFO, `Initializing Web server (Express)`);
 const express = require('express');
 const webServer = express();
 
@@ -64,7 +64,7 @@ webServer.set('view engine', 'ejs');
 webServer.use('/static', express.static('static'));
 
 webServer.use(function(req, res, next) {
-    helpers.log(helpers.logLevel.DEBUG, `[HTTP] Request form ${req.ip} at ${req.path}`);
+    log(logLevel.DEBUG, `[HTTP] Request form ${req.ip} at ${req.path}`);
 
     next();
 });
@@ -95,5 +95,5 @@ if (process.env.NODE_ENV != 'development') {
 }
 
 webServer.listen(config.http_port, () => {
-    helpers.log(helpers.logLevel.INFO, `TextStash Web server listening on port ${config.http_port}`);
+    log(logLevel.INFO, `TextStash Web server listening on port ${config.http_port}`);
 });

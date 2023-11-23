@@ -1,4 +1,4 @@
-const app = require('../app');
+const paste = require('../app/paste');
 
 const express = require('express'),
     router = express.Router();
@@ -24,7 +24,7 @@ router.post('/paste', (req, res) => {
         return;
     }
 
-    app.createPaste(text, password).then((id) => {
+    paste.createPaste(text, password).then((id) => {
         res.redirect(`/${id}`);
     }).catch(() => {
         res.status(500);
@@ -36,26 +36,26 @@ router.post('/paste', (req, res) => {
  * Reading paste
  */
 router.get('/:id', (req, res) => {
-    const paste = app.getPaste(req.params.id);
-    if (paste == false) {
+    const p = paste.getPaste(req.params.id);
+    if (p == false) {
         res.status(500);
         res.render('error', {error: 'Error 500<br>Internal server error.'});
         return;
     }
 
-    if (!paste.found) {
+    if (!p.found) {
         res.status(404);
         res.render('error', {error: 'Error 404<br>Paste not found.'});
         return;
     }
-    if (paste.encrypted) {
+    if (p.encrypted) {
         res.redirect(`/decrypt/${req.params.id}`);
         return;
     }
 
-    const delTime = app.getTimeUntilDeletion(req.params.id);
+    const delTime = paste.getTimeUntilDeletion(req.params.id);
 
-    res.render('read', {id: req.params.id, text: hljs.highlightAuto(paste.data).value, textB64: btoa(paste.data), delTime});
+    res.render('read', {id: req.params.id, text: hljs.highlightAuto(p.data).value, textB64: btoa(p.data), delTime});
 });
 
 /**
@@ -68,31 +68,31 @@ router.post('/:id', (req, res) => {
         return;
     }
 
-    const paste = app.getPaste(req.params.id, password);
-    if (paste == false) {
+    const p = paste.getPaste(req.params.id, password);
+    if (p == false) {
         res.status(500);
         res.render('error', {error: 'Error 500<br>Internal server error.'});
         return;
     }
 
-    if (!paste.found) {
+    if (!p.found) {
         res.status(404);
         res.render('error', {error: 'Error 404<br>Paste not found.'});
         return;
     }
-    if (!paste.encrypted) {
+    if (!p.encrypted) {
         res.redirect(`/${req.params.id}`);
         return;
     }
 
-    if (paste.data == false) {
+    if (p.data == false) {
         res.redirect(`/decrypt/${req.params.id}?wrongpass`);
         return;
     }
 
-    const delTime = app.getTimeUntilDeletion(req.params.id);
+    const delTime = paste.getTimeUntilDeletion(req.params.id);
 
-    res.render('read', {id: req.params.id, text: hljs.highlightAuto(paste.data).value, textB64: btoa(paste.data), delTime});
+    res.render('read', {id: req.params.id, text: hljs.highlightAuto(p.data).value, textB64: btoa(p.data), delTime});
 });
 
 /**
@@ -100,20 +100,20 @@ router.post('/:id', (req, res) => {
  */
 router.get('/decrypt/:id', (req, res) => {
     const error = req.query.wrongpass != null ? true : false;
-    const paste = app.getPaste(req.params.id);
-    if (paste == false) {
+    const p = paste.getPaste(req.params.id);
+    if (p == false) {
         res.status(500);
         res.render('error', {error: 'Error 500<br>Internal server error.'});
         return;
     }
 
-    if (!paste.found) {
+    if (!p.found) {
         res.status(404);
         res.render('error', {error: 'Error 404<br>Paste not found.'});
         return;
     }
 
-    if (!paste.encrypted) {
+    if (!p.encrypted) {
         res.redirect(`/${req.params.id}`);
         return;
     }
@@ -128,20 +128,20 @@ router.get('/raw/:id', (req, res) => {
     res.set('Content-Type', 'text/plain');
     
     const password = req.get('paste-password') || null;
-    const paste = app.getPaste(req.params.id, password);
-    if (paste == false) {
+    const p = paste.getPaste(req.params.id, password);
+    if (p == false) {
         res.status(500);
         res.render('error', {error: 'Error 500<br>Internal server error.'});
         return;
     }
 
-    if (!paste.found) {
+    if (!p.found) {
         res.status(404);
         res.send('404 Not Found');
         return;
     }
 
-    if (paste.encrypted && paste.data == false) {
+    if (p.encrypted && p.data == false) {
         res.status(401);
         if (password == null || password.length == 0) {
             res.send(`THIS PASTE IS ENCRYPTED
@@ -155,7 +155,7 @@ router.get('/raw/:id', (req, res) => {
         return;
     }
 
-    res.send(paste.data);
+    res.send(p.data);
 });
 
 /**
@@ -171,31 +171,31 @@ router.get('/raw/:id/:password', (req, res) => {
         return;
     }
     
-    const paste = app.getPaste(req.params.id, password);
-    if (paste == false) {
+    const p = paste.getPaste(req.params.id, password);
+    if (p == false) {
         res.status(500);
         res.send('Error 500<br>Internal server error.');
         return;
     }
 
-    if (!paste.found) {
+    if (!p.found) {
         res.status(404);
         res.send('404 Not Found');
         return;
     }
 
-    if (!paste.encrypted) {
+    if (!p.encrypted) {
         res.redirect(`/raw/${req.params.id}`);
         return;
     }
 
-    if (paste.data == false) {
+    if (p.data == false) {
         res.status(401);
         res.send('Decryption failed. Wrong password?');
         return;
     }
 
-    res.send(paste.data);
+    res.send(p.data);
 });
 
 module.exports = router;

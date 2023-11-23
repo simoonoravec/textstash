@@ -1,4 +1,4 @@
-const app = require('../app');
+const paste = require('../app/paste');
 
 const express = require('express'),
     router = express.Router();
@@ -15,7 +15,7 @@ router.post('/paste', (req, res) => {
         return;
     }
 
-    app.createPaste(text, password).then((id) => {
+    paste.createPaste(text, password).then((id) => {
         res.json({code: 200, 'paste_id': id});
     }).catch(() => {
         res.status(500);

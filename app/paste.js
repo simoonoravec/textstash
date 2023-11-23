@@ -1,6 +1,8 @@
-const config = require('./config');
-const helpers = require('./helpers');
-const crypto = require('crypto');
+const config = require('../config');
+const { log, logLevel } = require('./logger');
+const encryption = require('./encryption');
+const utils = require('./utils');
+
 const fs = require('fs');
 
 /**
@@ -28,16 +30,16 @@ function _createPaste(text) {
             reject();
         }
 
-        if (helpers.initializeDataDir(helpers.logLevel.DEBUG) == false) {
+        if (utils.initializeDataDir(logLevel.DEBUG) == false) {
             reject();
         }
 
-        let id = helpers.generateID();
+        let id = utils.generateID();
 
-        helpers.log(helpers.logLevel.DEBUG, `Writing file ${id}`);
+        log(logLevel.DEBUG, `Writing file ${id}`);
         try {
             fs.writeFile(config.data_dir + `/${id}`, text, 'utf8', function() {
-                helpers.log(helpers.logLevel.DEBUG, `Written file ${id}`);
+                log(logLevel.DEBUG, `Written file ${id}`);
                 resolve(id);
             });
         } catch(err) {
@@ -59,19 +61,19 @@ function _createPasteEncrypted(text, password) {
             reject();
         }
 
-        if (helpers.initializeDataDir(helpers.logLevel.DEBUG) == false) {
+        if (utils.initializeDataDir(logLevel.DEBUG) == false) {
             reject();
         }
 
-        let id = helpers.generateID();
+        let id = utils.generateID();
 
-        const encrypted = helpers.encrypt(text, password);
+        const encrypted = encryption.encrypt(text, password);
         text = `${encrypted.iv}:${encrypted.data}`;
 
-        helpers.log(helpers.logLevel.DEBUG, `Writing file ${id}`);
+        log(logLevel.DEBUG, `Writing file ${id}`);
         try {
             fs.writeFile(config.data_dir + `/${id}.enc`, text, 'utf8', function() {
-                helpers.log(helpers.logLevel.DEBUG, `Written file ${id}`);
+                log(logLevel.DEBUG, `Written file ${id}`);
                 resolve(id);
             });
         } catch(err) {
@@ -94,7 +96,7 @@ function getPaste(id, password = null) {
         }
     }
 
-    if (helpers.initializeDataDir(helpers.logLevel.DEBUG) == false) {
+    if (utils.initializeDataDir(logLevel.DEBUG) == false) {
         return false;
     }
 
@@ -135,14 +137,14 @@ function getPaste(id, password = null) {
  * @returns string | false
  */
 function _getPaste(id) {
-    helpers.log(helpers.logLevel.DEBUG, `Reading file ${id}`);
+    log(logLevel.DEBUG, `Reading file ${id}`);
 
     try {
         const data = fs.readFileSync(config.data_dir + `/${id}`, 'utf8');
-        helpers.log(helpers.logLevel.DEBUG, `Read file ${id} OK`);
+        log(logLevel.DEBUG, `Read file ${id} OK`);
         return data;
     } catch(err) {
-        helpers.log(helpers.logLevel.DEBUG, `Error reading file ${id}`);
+        log(logLevel.DEBUG, `Error reading file ${id}`);
         console.error(err);
         return false;
     }
@@ -155,13 +157,13 @@ function _getPaste(id) {
  * @returns string | false
  */
 function _getPasteEncrypted(id, password) {
-    helpers.log(helpers.logLevel.DEBUG, `Reading file ${id}`);
+    log(logLevel.DEBUG, `Reading file ${id}`);
 
     try {
         const raw = fs.readFileSync(config.data_dir + `/${id}.enc`, 'utf8').split(':');
-        helpers.log(helpers.logLevel.DEBUG, `Read file ${id} OK`);
+        log(logLevel.DEBUG, `Read file ${id} OK`);
 
-        const decrypted = helpers.decrypt(raw[1], raw[0], password);
+        const decrypted = encryption.decrypt(raw[1], raw[0], password);
     
         if (decrypted == false) {
             return false;
@@ -169,7 +171,7 @@ function _getPasteEncrypted(id, password) {
         
         return decrypted;
     } catch(err) {
-        helpers.log(helpers.logLevel.DEBUG, `Error reading file ${id}`);
+        log(logLevel.DEBUG, `Error reading file ${id}`);
         console.error(err);
         return false;
     }

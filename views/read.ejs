@@ -17,16 +17,18 @@
 <div class="textarea viewbox">
     <pre><code><%- text %></code></pre>
 </div>
+<%- include('partials/scripts') %>
 <script>
     const rawText = atob('<%= textB64 %>');
 
     $('#copy').on('click', function() {
         navigator.clipboard.writeText(rawText)
-            .then(() => alert("Copied to clipboard!"))
-            .catch(() => alert("Unable to copy to clipbard!\nMaybe your browser is blocking it?"));
+            .then(() => notyf.success("Copied to clipboard!"))
+            .catch(() => notyf.error("Unable to copy to clipbard!\nMaybe your browser is blocking it?"));
     });
 
     $('#download').on('click', function() {
+        notyf.success("Downloading...");
         downloadText('<%= id %>.txt', rawText);
     });
 

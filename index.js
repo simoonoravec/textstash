@@ -20,10 +20,12 @@ if (
     || !['random', 'phoenic'].includes(config.id_generator)
 
     || !config.id_bytes
+    || typeof config.id_bytes != 'number'
     || config.id_bytes < 1
     || config.id_bytes % 1 != 0
 
     || !config.delete_after
+    || typeof config.delete_after != 'number'
     || config.delete_after < 0
     || config.delete_after % 1 != 0
 ) {
@@ -59,7 +61,7 @@ log(logLevel.INFO, `Initializing Web server (Express)`);
 const express = require('express');
 const webServer = express();
 
-webServer.use(require('body-parser').urlencoded({ extended: false, limit: '1mb' }));
+webServer.use(require('body-parser').urlencoded({ extended: true, limit: '150kb' }));
 webServer.set('view engine', 'ejs');
 webServer.use('/static', express.static('static'));
 

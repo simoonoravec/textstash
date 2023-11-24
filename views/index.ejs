@@ -10,36 +10,22 @@
     </div>
     <textarea class="textarea" name="text" id="text" autofocus required></textarea>
 </form>
+<%- include('partials/scripts') %>
 <script>
-    $('#clipboard-paste').show();
-
-    let errPid = -1;
-    function showError(msg) {
-        $('#error-text').text(msg);
-        $('#error').fadeIn(500).css('display', 'inline-block');;
-
-        if (errPid != -1) {
-            clearTimeout(errPid);
-        }
-
-        errPid = setTimeout(() => {
-            $('#error').fadeOut(2000);
-            errPid = -1;
-        }, 5000);
-    }
-
     $('#save').on('click', function(e) {
         e.preventDefault();
 
         if ($('#text').val().length == 0) {
-            showError('Cannot stash empty text!');
+            notyf.error('Cannot save empty text!');
             return;
         }
 
-        if ((new TextEncoder().encode($('#text').val())).length > 5000000) {
-            showError('Text is too long!');
+        if ((new TextEncoder().encode($('#text').val())).length > 100000) {
+            notyf.error('Text is too long!\nMax. 100KB');
             return;
         }
+
+        const savingNotyf = notyf.success("Saving...");
 
         $.ajax({
             type: 'POST',
@@ -50,7 +36,8 @@
                 window.location.href = data.paste_id;
             },
             error: function (err) {
-                showError(err.responseJSON.error);
+                notyf.dismiss(savingNotyf);
+                notyf.error(err.responseJSON.error);
             }
         });
     });

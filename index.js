@@ -1,4 +1,7 @@
 require('dotenv').config();
+
+global.app_version = require("./package.json").version;
+
 const fs = require('fs');
 
 if (!fs.existsSync(__dirname + '/config.js')) {

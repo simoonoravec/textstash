@@ -1,6 +1,6 @@
 {
   "name": "haste",
-  "version": "1.0.0",
+  "version": "0.5.2",
   "description": "A simple self-hosted pastebin alternative",
   "main": "index.js",
   "scripts": {

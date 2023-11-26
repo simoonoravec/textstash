@@ -36,10 +36,16 @@ function _createPaste(text) {
 
         let id = utils.generateID();
 
-        log(logLevel.DEBUG, `Writing file ${id}`);
+        const fileData = JSON.stringify({
+            "encrypted": false,
+            "time_created": Date.now(),
+            "data": text
+        });
+
+        log(logLevel.DEBUG, `Writing file ${id}.json`);
         try {
-            fs.writeFile(config.data_dir + `/${id}`, text, 'utf8', function() {
-                log(logLevel.DEBUG, `Written file ${id}`);
+            fs.writeFile(config.data_dir + `/${id}.json`, fileData, 'utf8', function() {
+                log(logLevel.DEBUG, `Written file ${id}.json`);
                 resolve(id);
             });
         } catch(err) {
@@ -70,10 +76,16 @@ function _createPasteEncrypted(text, password) {
         const encrypted = encryption.encrypt(text, password);
         text = `${encrypted.iv}:${encrypted.data}`;
 
-        log(logLevel.DEBUG, `Writing file ${id}`);
+        const fileData = JSON.stringify({
+            "encrypted": true,
+            "time_created": Date.now(),
+            "data": text
+        });
+
+        log(logLevel.DEBUG, `Writing file ${id}.json`);
         try {
-            fs.writeFile(config.data_dir + `/${id}.enc`, text, 'utf8', function() {
-                log(logLevel.DEBUG, `Written file ${id}`);
+            fs.writeFile(config.data_dir + `/${id}.json`, fileData, 'utf8', function() {
+                log(logLevel.DEBUG, `Written file ${id}.json`);
                 resolve(id);
             });
         } catch(err) {
@@ -100,29 +112,41 @@ function getPaste(id, password = null) {
         return false;
     }
 
-    const pasteExists = fs.existsSync(config.data_dir + `/${id}`);
-    const pasteExistsEncrypted = fs.existsSync(config.data_dir + `/${id}.enc`);
-
-    if (pasteExists) {
-        return {
-            found: true,
-            encrypted: false,
-            data: _getPaste(id)
+    if (fs.existsSync(config.data_dir + `/${id}.json`)) {
+        let paste;
+        try {
+            paste = JSON.parse(fs.readFileSync(config.data_dir + `/${id}.json`));
+        } catch (e) {
+            return {
+                found: false
+            }
         }
-    }
-    if (pasteExistsEncrypted) {
-        if (password == null || password.length == 0) {
+
+        if (paste.encrypted) {
+            if (password == null || password.length == 0) {
+                return {
+                    found: true,
+                    encrypted: true,
+                    data: false
+                }
+            }
+
+            const raw = paste.data.split(':');
+            const decrypted = encryption.decrypt(raw[1], raw[0], password);
+
             return {
                 found: true,
                 encrypted: true,
-                data: false
+                time_d: _getTimeUntilDeletion(paste.time_created),
+                data: decrypted
             }
         }
 
         return {
             found: true,
-            encrypted: true,
-            data: _getPasteEncrypted(id, password)
+            encrypted: false,
+            time_d: _getTimeUntilDeletion(paste.time_created),
+            data: paste.data
         }
     }
 
@@ -132,73 +156,17 @@ function getPaste(id, password = null) {
 }
 
 /**
- * Read uncencrypted paste
- * @param {string} id Paste ID
- * @returns string | false
- */
-function _getPaste(id) {
-    log(logLevel.DEBUG, `Reading file ${id}`);
-
-    try {
-        const data = fs.readFileSync(config.data_dir + `/${id}`, 'utf8');
-        log(logLevel.DEBUG, `Read file ${id} OK`);
-        return data;
-    } catch(err) {
-        log(logLevel.DEBUG, `Error reading file ${id}`);
-        console.error(err);
-        return false;
-    }
-}
-
-/**
- * Read encrypted paste
- * @param {string} id Paste ID
- * @param {string} password Password
- * @returns string | false
- */
-function _getPasteEncrypted(id, password) {
-    log(logLevel.DEBUG, `Reading file ${id}`);
-
-    try {
-        const raw = fs.readFileSync(config.data_dir + `/${id}.enc`, 'utf8').split(':');
-        log(logLevel.DEBUG, `Read file ${id} OK`);
-
-        const decrypted = encryption.decrypt(raw[1], raw[0], password);
-    
-        if (decrypted == false) {
-            return false;
-        }
-        
-        return decrypted;
-    } catch(err) {
-        log(logLevel.DEBUG, `Error reading file ${id}`);
-        console.error(err);
-        return false;
-    }
-}
-
-/**
  * Get human readable time until the deletion of a paste
- * @param {int} id Paste ID
+ * @param {bigint} time_created Time when the paste was created in milliseconds
  * @returns String
  */
-function getTimeUntilDeletion(id) {
+function _getTimeUntilDeletion(time_created) {
     if (config.delete_after < 1) {
         return false;
     }
 
-    let path;
-    if (fs.existsSync(config.data_dir + `/${id}`)) {
-        path = config.data_dir + `/${id}`;
-    }
-    else if (fs.existsSync(config.data_dir + `/${id}.enc`)) {
-        path = config.data_dir + `/${id}.enc`;
-    } else {
-        return false;
-    }
-
     try {
-        let diffMinutes = config.delete_after * 60 - (new Date() - fs.statSync(path).mtime) / (1000 * 60);
+        let diffMinutes = config.delete_after * 60 - (new Date() - time_created) / (1000 * 60);
 
         if (diffMinutes < 1) {
             return '<1 minute';
@@ -221,4 +189,4 @@ function getTimeUntilDeletion(id) {
     }
 }
 
-module.exports = { createPaste, getPaste, getTimeUntilDeletion };
+module.exports = { createPaste, getPaste };

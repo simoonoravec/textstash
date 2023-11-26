@@ -53,9 +53,7 @@ router.get('/:id', (req, res) => {
         return;
     }
 
-    const delTime = paste.getTimeUntilDeletion(req.params.id);
-
-    res.render('read', {id: req.params.id, text: hljs.highlightAuto(p.data).value, textB64: btoa(p.data), delTime});
+    res.render('read', {id: req.params.id, text: hljs.highlightAuto(p.data).value, textB64: btoa(p.data), delTime: p.time_d});
 });
 
 /**
@@ -90,9 +88,7 @@ router.post('/:id', (req, res) => {
         return;
     }
 
-    const delTime = paste.getTimeUntilDeletion(req.params.id);
-
-    res.render('read', {id: req.params.id, text: hljs.highlightAuto(p.data).value, textB64: btoa(p.data), delTime});
+    res.render('read', {id: req.params.id, text: hljs.highlightAuto(p.data).value, textB64: btoa(p.data), delTime: p.time_d});
 });
 
 /**

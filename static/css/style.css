@@ -106,6 +106,7 @@ body {
 }
 
 .viewbox pre {
+    margin: 0;
     white-space: break-spaces;
 }
 

@@ -55,7 +55,7 @@ function _generateIDrandom() {
     
     // This is probably unnecessary but it will make sure that you basically never run out of IDs
     let i = 1;
-    while (fs.existsSync(config.data_dir + `/${id}`) || fs.existsSync(config.data_dir + `/${id}.enc`)) {
+    while (fs.existsSync(config.data_dir + `/${id}.json`)) {
         id = crypto.randomBytes(config.id_bytes + i).toString('hex');
         i++;
     }
@@ -78,7 +78,7 @@ function _generateIDphoenic() {
 
     // This is probably unnecessary but it will make sure that you basically never run out of IDs
     let i = 0;
-    while (fs.existsSync(config.data_dir + `/${id}`) || fs.existsSync(config.data_dir + `/${id}.enc`)) {
+    while (fs.existsSync(config.data_dir + `/${id}.json`)) {
         id = uniqueNamesGenerator(UNGconfig);
 
         i++;

@@ -15,7 +15,7 @@ npm install
 Rename **config.example.js** to **config.js** and adjust the configuration as you need to
 
 ```
-npm run start
+npm start
 ```
 # Running in background
 To run the application in background, I recommend using [PM2](https://www.npmjs.com/package/pm2). But feel free to use other methods (such as creating a *systemd* service).

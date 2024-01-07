@@ -1,6 +1,8 @@
 # TextStash
 A very simple pastebin/hastebin alternative
 
+Also check out [FileStash](https://github.com/simoonoravec/filestash) if you like this!
+
 # How to install
 ### Requirements:
 - NodeJS (Recommended version: 20)

@@ -53,7 +53,7 @@ router.get('/:id', (req, res) => {
         return;
     }
 
-    res.render('read', {id: req.params.id, text: hljs.highlightAuto(p.data).value, textB64: btoa(p.data), delTime: p.time_d});
+    res.render('read', {id: req.params.id, text: hljs.highlightAuto(p.data).value, textB64: btoa(encodeURIComponent(p.data)), delTime: p.time_d});
 });
 
 /**
@@ -88,7 +88,7 @@ router.post('/:id', (req, res) => {
         return;
     }
 
-    res.render('read', {id: req.params.id, text: hljs.highlightAuto(p.data).value, textB64: btoa(p.data), delTime: p.time_d});
+    res.render('read', {id: req.params.id, text: hljs.highlightAuto(p.data).value, textB64: btoa(encodeURIComponent(p.data)), delTime: p.time_d});
 });
 
 /**

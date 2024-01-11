@@ -19,7 +19,7 @@
 </div>
 <%- include('partials/scripts') %>
 <script>
-    const rawText = atob('<%= textB64 %>');
+    const rawText = decodeURIComponent(atob('<%= textB64 %>'));
 
     $('#copy').on('click', function() {
         navigator.clipboard.writeText(rawText)
